@@ -11,6 +11,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.web.WebView;
+import lee.journalj.service.ScheduleService;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class NewsTab {
     private final ObservableList<News> newsList = FXCollections.observableArrayList();
     private News selectedNews;
 
-    public NewsTab() {
+    public NewsTab(ScheduleService scheduleService) {
         // Инициализация БД
         DatabaseMigrator.migrate();
         loadNews();
@@ -87,6 +88,8 @@ public class NewsTab {
         }).start();
     }
 
+
+
     private void showNewsContent(News news) {
         if (news != null) {
             String htmlContent = "<html><body style='font-family: Arial, sans-serif; padding: 15px;'>" +
@@ -105,15 +108,12 @@ public class NewsTab {
     private void showNewsDialog(News news) {
         boolean isNew = news == null;
 
-        // Диалоговое окно
         Dialog<News> dialog = new Dialog<>();
         dialog.setTitle(isNew ? "Добавить новость" : "Редактировать новость");
 
-        // Кнопки
         ButtonType saveButtonType = new ButtonType(isNew ? "Добавить" : "Сохранить", ButtonBar.ButtonData.OK_DONE);
         dialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
 
-        // Поля формы
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
@@ -135,15 +135,13 @@ public class NewsTab {
 
         dialog.getDialogPane().setContent(grid);
 
-        // Валидация
         Node saveButton = dialog.getDialogPane().lookupButton(saveButtonType);
         saveButton.setDisable(true);
 
-        titleField.textProperty().addListener((observable, oldValue, newValue) -> {
-            saveButton.setDisable(newValue.trim().isEmpty());
+        titleField.textProperty().addListener((obs, oldVal, newVal) -> {
+            saveButton.setDisable(newVal.trim().isEmpty());
         });
 
-        // Обработка результата
         dialog.setResultConverter(dialogButton -> {
             if (dialogButton == saveButtonType) {
                 if (isNew) {
@@ -167,7 +165,17 @@ public class NewsTab {
         });
     }
 
+
     private void saveNews(News news) {
+        if (news.getTitle() == null || news.getTitle().trim().isEmpty()) {
+            showError("Заголовок не может быть пустым.");
+            return;
+        }
+        if (news.getContent() == null || news.getContent().trim().isEmpty()) {
+            showError("Содержимое новости не может быть пустым.");
+            return;
+        }
+
         new Thread(() -> {
             newsService.saveNews(news);
             Platform.runLater(() -> {
@@ -175,6 +183,14 @@ public class NewsTab {
                 newsListView.getSelectionModel().select(0);
             });
         }).start();
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Ошибка");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void updateNews(News news) {

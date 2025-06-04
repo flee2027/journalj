@@ -3,8 +3,13 @@ package lee.journalj;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import lee.journalj.data.repository.HomeworkRepository;
+import lee.journalj.data.repository.LessonRepository;
+import lee.journalj.data.repository.implementation.HomeworkRepositoryImplementation;
+import lee.journalj.data.repository.implementation.LessonRepositoryImplementation;
 import lee.journalj.data.util.DatabaseHandler;
 import lee.journalj.data.util.DatabaseMigrator;
+import lee.journalj.service.ScheduleService;
 import lee.journalj.ui.MainView;
 
 public class Main extends Application {
@@ -30,7 +35,10 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        MainView mainView = new MainView();
+        LessonRepositoryImplementation lessonRepo = new LessonRepositoryImplementation();
+        HomeworkRepositoryImplementation homeworkRepo = new HomeworkRepositoryImplementation();
+        ScheduleService scheduleService = new ScheduleService(lessonRepo, homeworkRepo);
+        MainView mainView = new MainView(scheduleService); // Передача lessonRepo
         Scene scene = new Scene(mainView.getView(), 600, 400);
 
         primaryStage.setTitle("JournalJ");

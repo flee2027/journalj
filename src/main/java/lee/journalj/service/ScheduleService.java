@@ -1,4 +1,4 @@
-package lee.journalj.data.service;
+package lee.journalj.service;
 
 import lee.journalj.data.model.Homework;
 import lee.journalj.data.model.Lesson;
@@ -6,9 +6,9 @@ import lee.journalj.data.repository.HomeworkRepository;
 import lee.journalj.data.repository.LessonRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public class ScheduleService {
+    // Исправлено: зависимость от интерфейсов, а не от реализации
     private final LessonRepository lessonRepo;
     private final HomeworkRepository homeworkRepo;
 
@@ -25,10 +25,10 @@ public class ScheduleService {
         lessonRepo.save(lesson);
     }
 
+    // Исправлен метод update с корректной сигнатурой
     public void updateLesson(Lesson lesson) {
-        lessonRepo.update(lesson);
+        lessonRepo.update(lesson.getId(), lesson);
     }
-
     public void deleteLesson(int id) {
         lessonRepo.delete(id);
     }
@@ -37,7 +37,11 @@ public class ScheduleService {
         homeworkRepo.save(homework);
     }
 
-    public Optional<Homework> getHomeworkById(int id) {
-        return homeworkRepo.findById(id);
+    public Homework getHomeworkById(int id) {
+        return homeworkRepo.findById(id).orElseGet(() -> {
+            Homework emptyHomework = new Homework();
+            emptyHomework.setContent(""); // Инициализация пустого содержимого
+            return emptyHomework;
+        });
     }
 }

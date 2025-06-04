@@ -9,24 +9,27 @@ import lee.journalj.data.model.Homework;
 import lee.journalj.data.model.Lesson;
 import lee.journalj.ui.HomeworkEditor;
 
+import java.time.format.DateTimeFormatter;
+
 public class LessonCard {
     private final VBox card;
 
     public LessonCard(Lesson lesson) {
         Label subjectLabel = new Label("Предмет: " + lesson.getSubject());
         Label timeLabel = new Label(
-                lesson.getStartTime().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
+                lesson.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))
                         + " – " +
-                        lesson.getEndTime().format(java.time.format.DateTimeFormatter.ofPattern("HH:mm"))
+                        lesson.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm"))
         );
         Label classroomLabel = new Label("Аудитория: " + lesson.getClassroom());
 
         WebView homeworkPreview = new WebView();
-
+        
+        // Исправление 1: Улучшена проверка null для избежания NullPointerException
         if (lesson.getHomeworkId() != 0 && lesson.getHomework() != null) {
-            // Проверка на null для Homework объекта
-            if (lesson.getHomework().getContent() != null) {
-                homeworkPreview.getEngine().loadContent(lesson.getHomework().getContent());
+            Homework homework = lesson.getHomework();
+            if (homework != null && homework.getContent() != null && !homework.getContent().isEmpty()) {
+                homeworkPreview.getEngine().loadContent(homework.getContent());
             } else {
                 homeworkPreview.getEngine().loadContent("<p>Нет содержимого домашнего задания</p>");
             }
@@ -36,20 +39,21 @@ public class LessonCard {
 
         Button editHomeworkBtn = new Button("Редактировать домашнее задание");
         editHomeworkBtn.setOnAction(e -> {
-            HomeworkEditor.showEditDialog(lesson.getHomework(), (Homework updatedHomework) -> {
-                if (updatedHomework != null) {
-                    String content = updatedHomework.getContent();
-                    if (content != null) {
-                        homeworkPreview.getEngine().loadContent(content);
-                    } else {
-                        homeworkPreview.getEngine().loadContent("<p>Нет содержимого домашнего задания</p>");
-                    }
+            Homework homework = lesson.getHomework();
+            if (homework == null) {
+                homework = new Homework(); // Создаем новое домашнее задание, если его нет
+                lesson.setHomework(homework);
+            }
+            Homework finalHomework = homework;
+            HomeworkEditor.showEditDialog(homework, () -> {
+                String content = finalHomework.getContent();
+                if (content != null && !content.isEmpty()) {
+                    homeworkPreview.getEngine().loadContent(content);
                 } else {
-                    homeworkPreview.getEngine().loadContent("<p>Нет обновленного домашнего задания</p>");
+                    homeworkPreview.getEngine().loadContent("<p>Нет обновленного содержимого</p>");
                 }
             });
         });
-
 
         card = new VBox(
                 new HBox(subjectLabel),

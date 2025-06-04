@@ -7,13 +7,15 @@ import lee.journalj.data.util.DatabaseHandler;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class NewsRepositoryImplementation implements NewsRepository {
+    // Обновляем форматтер, чтобы он мог обрабатывать наносекунды
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSSSSS");
 
-    @Override
     public List<News> findAll() {
         List<News> newsList = new ArrayList<>();
         String sql = "SELECT * FROM news ORDER BY publication_date DESC";
@@ -32,7 +34,6 @@ public class NewsRepositoryImplementation implements NewsRepository {
         return newsList;
     }
 
-    @Override
     public Optional<News> findById(int id) {
         String sql = "SELECT * FROM news WHERE id = ?";
 
@@ -51,7 +52,6 @@ public class NewsRepositoryImplementation implements NewsRepository {
         return Optional.empty();
     }
 
-    @Override
     public void save(News news) {
         String sql = "INSERT INTO news(title, content, publication_date) VALUES(?,?,?)";
 
@@ -73,7 +73,6 @@ public class NewsRepositoryImplementation implements NewsRepository {
         }
     }
 
-    @Override
     public void update(News news) {
         String sql = "UPDATE news SET title = ?, content = ? WHERE id = ?";
 
@@ -89,7 +88,6 @@ public class NewsRepositoryImplementation implements NewsRepository {
         }
     }
 
-    @Override
     public void delete(int id) {
         String sql = "DELETE FROM news WHERE id = ?";
 
@@ -109,9 +107,9 @@ public class NewsRepositoryImplementation implements NewsRepository {
         news.setTitle(rs.getString("title"));
         news.setContent(rs.getString("content"));
 
-        // Парсим дату из строки вручную
         String dateStr = rs.getString("publication_date");
-        news.setPublicationDate(LocalDateTime.parse(dateStr));
+        // Используем новый форматтер для парсинга даты
+        news.setPublicationDate(LocalDateTime.parse(dateStr, DATE_FORMATTER));
 
         return news;
     }

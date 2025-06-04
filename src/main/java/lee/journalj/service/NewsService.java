@@ -8,21 +8,25 @@ import lee.journalj.data.repository.implementation.NewsRepositoryImplementation;
 import java.util.List;
 
 public class NewsService {
-    private final NewsRepository newsRepository = new NewsRepositoryImplementation();
+    private final NewsRepository newsRepo; // Используем интерфейс вместо реализации
+
+    public NewsService() {
+        this.newsRepo = (NewsRepository) new NewsRepositoryImplementation();
+    }
 
     public List<News> getAllNews() {
-        return newsRepository.findAll();
+        return newsRepo.findAll();
     }
 
     public void saveNews(News news) {
-        newsRepository.save(news);
+        newsRepo.save(news);
     }
 
     public void updateNews(News news) {
-        newsRepository.update(news);
+        newsRepo.update(news);
     }
 
     public void deleteNews(int id) {
-        newsRepository.delete(id);
+        newsRepo.delete(id);
     }
 }

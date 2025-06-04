@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 public class DatabaseHandler {
     private static DatabaseConfig config;
+    private static DatabaseHandler instance;
 
     static {
         try {
@@ -14,6 +15,9 @@ public class DatabaseHandler {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException("SQLite driver not found", e);
         }
+    }
+    public DatabaseHandler(DatabaseConfig config) {
+        this.config = config;
     }
 
     public static void init(DatabaseConfig config) {
@@ -39,6 +43,25 @@ public class DatabaseHandler {
                 config.getUser(),
                 config.getPassword()
         );
+    }
+
+    public DatabaseConfig getConfig() {
+        return config;
+    }
+    public static void close(Connection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                throw new RuntimeException("Failed to close connection", e);
+            }
+        }
+    }
+    public static DatabaseHandler getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("DatabaseHandler не инициализирован");
+        }
+        return instance;
     }
 
     public enum DatabaseType { SQLITE, POSTGRESQL }

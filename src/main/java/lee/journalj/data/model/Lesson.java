@@ -1,25 +1,29 @@
 package lee.journalj.data.model;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 public class Lesson {
     private int id;
     private String content;
     private LocalTime startTime;
+    private LocalDate date; // Новое поле для хранения даты урока
+    private String name;
     private LocalTime endTime;
     private String subject;
     private String classroom;
-    private int homeworkId;
+    private Integer homeworkId; // Изменяем тип с int на Integer
     private Homework homework;
     private boolean completed;
+    private String dayOfWeek; // День недели
 
     // Конструкторы, геттеры и сеттеры
 
     public Lesson(int id, String content) {
         this.id = id;
         this.content = content;
-        this.homeworkId = homeworkId;
-        this.homework = homework;
+        this.homeworkId = 0; // Исправлено: инициализация homeworkId
+        this.homework = null; // Исправлено: инициализация homework
     }
 
     // Добавим конструктор без Homework для случаев, когда домашнего задания нет
@@ -30,6 +34,23 @@ public class Lesson {
         this.homework = null;
     }
 
+    public Lesson(int id, String subject, LocalTime startTime, LocalTime endTime, String classroom, Integer homeworkId) {
+        this.id = id;
+        this.subject = subject;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.classroom = classroom;
+        this.homeworkId = homeworkId;
+    }
+
+    public Lesson(int id, String subject, LocalTime startTime, LocalTime endTime, Integer homeworkId) {
+        this.id = id;
+        this.subject = subject != null ? subject : ""; // Защита от null
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.homeworkId = homeworkId;
+    }
+
     public int getId() {
         return id;
     }
@@ -37,6 +58,15 @@ public class Lesson {
     public void setId(int id) {
         this.id = id;
     }
+    
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
     public void setStartTime(LocalTime startTime) { this.startTime = startTime; }
     public void setEndTime(LocalTime endTime) { this.endTime = endTime; }
     public void setSubject(String subject) { this.subject = subject; }
@@ -53,9 +83,10 @@ public class Lesson {
         this.content = content;
     }
 
-    public int getHomeworkId() {
+    public Integer getHomeworkId() {
         return homeworkId;
     }
+    public String getName() { return name; }
 
     public void setHomeworkId(int homeworkId) {
         this.homeworkId = homeworkId;
@@ -67,5 +98,13 @@ public class Lesson {
 
     public void setHomework(Homework homework) {
         this.homework = homework;
+    }
+
+    public String getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public void setDayOfWeek(String dayOfWeek) {
+        this.dayOfWeek = dayOfWeek;
     }
 }

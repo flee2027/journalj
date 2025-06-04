@@ -51,7 +51,7 @@ public class HomeworkRepositoryImplementation implements HomeworkRepository {
             pstmt.setInt(1, id);
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    return Optional.of(new Homework(rs.getInt("id"), rs.getString("content")));
+                    return Optional.of(new Homework(rs.getInt("id"), rs.getString("content"), null));
                 }
             }
         } catch (SQLException e) {
@@ -67,7 +67,7 @@ public class HomeworkRepositoryImplementation implements HomeworkRepository {
             try (ResultSet rs = pstmt.executeQuery()) {
                 List<Homework> homeworks = new ArrayList<>();
                 while (rs.next()) {
-                    homeworks.add(new Homework(rs.getInt("id"), rs.getString("content")));
+                    homeworks.add(new Homework(rs.getInt("id"), rs.getString("content"), null));
                 }
                 return homeworks;
             }
@@ -87,48 +87,4 @@ public class HomeworkRepositoryImplementation implements HomeworkRepository {
             throw new RuntimeException("Failed to delete homework by id: " + id, e);
         }
     }
-
-    public void deleteAll() {
-        String sql = "DELETE FROM homework";
-        try (Connection conn = DatabaseHandler.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to delete all homeworks", e);
-        }
-    }
-
-    public void deleteByContentLike(String content) {
-        String sql = "DELETE FROM homework WHERE content LIKE ?";
-        try (Connection conn = DatabaseHandler.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, "%" + content + "%");
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to delete homework by content like: " + content, e);
-        }
-    }
-
-    public void deleteByContentStartsWith(String content) {
-        String sql = "DELETE FROM homework WHERE content LIKE ?";
-        try (Connection conn = DatabaseHandler.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, content + "%");
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to delete homework by content starts with: " + content, e);
-        }
-    }
-
-    public void deleteByContentEndsWith(String content) {
-        String sql = "DELETE FROM homework WHERE content LIKE ?";
-        try (Connection conn = DatabaseHandler.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, "%" + content);
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to delete homework by content ends with: " + content, e);
-        }
-    }
-
 }
