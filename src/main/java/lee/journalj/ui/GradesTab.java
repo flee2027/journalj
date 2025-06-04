@@ -1,4 +1,4 @@
-package lee.journalj.UI;
+package lee.journalj.ui;
 
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;

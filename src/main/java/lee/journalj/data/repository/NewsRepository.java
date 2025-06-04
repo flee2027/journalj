@@ -1,7 +1,7 @@
-package lee.journalj.Data.Repository;
+package lee.journalj.data.repository;
 
 
-import lee.journalj.Data.Model.News;
+import lee.journalj.data.model.News;
 import java.util.List;
 import java.util.Optional;
 

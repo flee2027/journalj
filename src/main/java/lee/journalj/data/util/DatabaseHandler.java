@@ -1,4 +1,4 @@
-package lee.journalj.Data.Util;
+package lee.journalj.data.util;
 
 
 import java.sql.Connection;

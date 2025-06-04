@@ -1,9 +1,9 @@
-package lee.journalj.UI;
+package lee.journalj.ui;
 
 import javafx.scene.Node;
-import lee.journalj.Data.Model.News;
-import lee.journalj.Data.Util.DatabaseMigrator;
-import lee.journalj.Service.NewsService;
+import lee.journalj.data.model.News;
+import lee.journalj.data.util.DatabaseMigrator;
+import lee.journalj.service.NewsService;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

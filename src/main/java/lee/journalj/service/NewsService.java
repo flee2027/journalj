@@ -3,7 +3,7 @@ package lee.journalj.service;
 
 import lee.journalj.data.model.News;
 import lee.journalj.data.repository.NewsRepository;
-import lee.journalj.data.repository.Implementation.NewsRepositoryImplementation;
+import lee.journalj.data.repository.implementation.NewsRepositoryImplementation;
 
 import java.util.List;
 

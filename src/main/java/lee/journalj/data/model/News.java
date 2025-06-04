@@ -1,4 +1,4 @@
-package lee.journalj.Data.Model;
+package lee.journalj.data.model;
 
 import java.time.LocalDateTime;
 

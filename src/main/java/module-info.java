@@ -8,8 +8,8 @@ module lee.journalj.journalj {
     requires net.synedra.validatorfx;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
-    requires eu.hansolo.tilesfx;
+    requires java.sql;
 
-    opens lee.journalj.journalj to javafx.fxml;
-    exports lee.journalj.journalj;
+    opens lee.journalj to javafx.fxml;
+    exports lee.journalj;
 }

@@ -1,4 +1,4 @@
-package lee.journalj.data.repository.Implementation;
+package lee.journalj.data.repository.implementation;
 
 
 import lee.journalj.data.model.News;
