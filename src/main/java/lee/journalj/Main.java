@@ -1,48 +1,97 @@
 package lee.journalj;
 
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-import lee.journalj.data.repository.HomeworkRepository;
-import lee.journalj.data.repository.LessonRepository;
-import lee.journalj.data.repository.implementation.HomeworkRepositoryImplementation;
-import lee.journalj.data.repository.implementation.LessonRepositoryImplementation;
-import lee.journalj.data.util.DatabaseHandler;
-import lee.journalj.data.util.DatabaseMigrator;
-import lee.journalj.service.ScheduleService;
+import lee.journalj.data.repository.implementation.*;
+import lee.journalj.service.*;
 import lee.journalj.ui.MainView;
+import lee.journalj.data.util.DatabaseHandler;
+import lee.journalj.data.util.DatabaseHandler.DatabaseConfig;
+import lee.journalj.data.util.DatabaseHandler.DatabaseType;
+import org.flywaydb.core.Flyway;
+import org.flywaydb.core.api.configuration.FluentConfiguration;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 
 public class Main extends Application {
-    public static void main(String[] args) {
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException e) {
-            System.err.println("SQLite driver not found: " + e.getMessage());
-            System.exit(1);
-        }
-
-        DatabaseHandler.DatabaseConfig config = new DatabaseHandler.DatabaseConfig(
-                DatabaseHandler.DatabaseType.SQLITE,
-                "jdbc:sqlite:journal.db",
-                "",
-                ""
-        );
-
-        DatabaseHandler.init(config); // <-- Сначала инициализируем
-        DatabaseMigrator.migrate(); // <-- потом миграция
-        launch(args);
-    }
+    private static final Logger logger = Logger.getLogger(Main.class.getName());
+    private GradeService gradeService;
+    private StudentService studentService;
+    private NewsService newsService;
+    private HomeworkService homeworkService;
+    private ScheduleService scheduleService;
 
     @Override
     public void start(Stage primaryStage) {
-        LessonRepositoryImplementation lessonRepo = new LessonRepositoryImplementation();
-        HomeworkRepositoryImplementation homeworkRepo = new HomeworkRepositoryImplementation();
-        ScheduleService scheduleService = new ScheduleService(lessonRepo, homeworkRepo);
-        MainView mainView = new MainView(scheduleService); // Передача lessonRepo
-        Scene scene = new Scene(mainView.getView(), 600, 400);
+        try {
+            initializeDatabase();
+            initializeServices();
+            MainView mainView = new MainView(
+                new LessonRepositoryImplementation(),
+                new HomeworkRepositoryImplementation(),
+                new NewsRepositoryImplementation(),
+                scheduleService,
+                homeworkService,
+                newsService,
+                gradeService,
+                studentService
+            );
+            mainView.show(primaryStage);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to start application", e);
+            System.exit(1);
+        }
+    }
 
-        primaryStage.setTitle("JournalJ");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+    private void initializeDatabase() throws Exception {
+        try {
+            // Initialize database configuration
+            String dbPath = System.getProperty("user.dir") + "/journal.db";
+            DatabaseConfig config = new DatabaseConfig(
+                DatabaseType.SQLITE,
+                "jdbc:sqlite:" + dbPath,
+                "",
+                ""
+            );
+            DatabaseHandler.init(config);
+
+            // Initialize Flyway for database migrations
+            DatabaseHandler dbHandler = DatabaseHandler.getInstance();
+            FluentConfiguration flywayConfig = Flyway.configure()
+                .dataSource(dbHandler.getConnection().getMetaData().getURL(), "", "")
+                .locations("filesystem:src/main/resources/db/migration")
+                .baselineOnMigrate(true)
+                .validateOnMigrate(true);
+            Flyway flyway = flywayConfig.load();
+            flyway.migrate();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to initialize database", e);
+            throw e;
+        }
+    }
+
+    private void initializeServices() {
+        try {
+            // Initialize repositories
+            GradeRepositoryImplementation gradeRepository = new GradeRepositoryImplementation();
+            StudentRepositoryImplementation studentRepository = new StudentRepositoryImplementation();
+            NewsRepositoryImplementation newsRepository = new NewsRepositoryImplementation();
+            HomeworkRepositoryImplementation homeworkRepository = new HomeworkRepositoryImplementation();
+            LessonRepositoryImplementation lessonRepository = new LessonRepositoryImplementation();
+
+            // Initialize services
+            gradeService = new GradeService(gradeRepository);
+            studentService = new StudentService(studentRepository);
+            newsService = new NewsService(newsRepository);
+            homeworkService = new HomeworkService(homeworkRepository);
+            scheduleService = new ScheduleService(lessonRepository, homeworkRepository);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Failed to initialize services", e);
+            throw new RuntimeException("Failed to initialize services", e);
+        }
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

@@ -1,12 +1,15 @@
 Manifest-Version: 1.0
 Main-Class: lee.journalj.Launcher
-Class-Path: javafx-base-17.0.6-linux.jar heatmap-21.0.3.jar javafx-swing
- -17.0.6.jar javafx-web-17.0.6.jar javafx-media-17.0.6-linux.jar control
- sfx-11.2.1.jar javafx-fxml-17.0.6-linux.jar javafx-swing-17.0.6-linux.j
- ar validatorfx-0.5.0.jar ikonli-core-12.3.1.jar javafx-fxml-17.0.6.jar 
- toolboxfx-21.0.3.jar ikonli-javafx-12.3.1.jar countries-21.0.3.jar java
- fx-controls-17.0.6.jar bootstrapfx-core-0.4.0.jar javafx-controls-17.0.
- 6-linux.jar javafx-base-17.0.6.jar javafx-web-17.0.6-linux.jar javafx-g
- raphics-17.0.6.jar toolbox-21.0.5.jar javafx-media-17.0.6.jar formsfx-c
- ore-11.6.0.jar tilesfx-21.0.3.jar javafx-graphics-17.0.6-linux.jar
+Class-Path: javafx-graphics-17.0.6-linux.jar javafx-graphics-17.0.6.jar 
+ javafx-base-17.0.6.jar ikonli-javafx-12.3.1.jar jackson-dataformat-toml
+ -2.14.0.jar javafx-controls-17.0.6.jar javafx-web-17.0.6-linux.jar java
+ fx-web-17.0.6.jar jackson-databind-2.14.0.jar validatorfx-0.5.0.jar jav
+ afx-media-17.0.6-linux.jar sqlite-jdbc-3.40.0.0.jar countries-21.0.3.ja
+ r javafx-media-17.0.6.jar javafx-fxml-17.0.6-linux.jar toolboxfx-21.0.3
+ .jar bootstrapfx-core-0.4.0.jar javafx-fxml-17.0.6.jar controlsfx-11.2.
+ 1.jar jackson-core-2.14.0.jar javafx-swing-17.0.6-linux.jar javafx-swin
+ g-17.0.6.jar flyway-core-9.16.0.jar javafx-base-17.0.6-linux.jar tilesf
+ x-21.0.3.jar toolbox-21.0.5.jar heatmap-21.0.3.jar jackson-annotations-
+ 2.14.0.jar javafx-controls-17.0.6-linux.jar ikonli-core-12.3.1.jar form
+ sfx-core-11.6.0.jar
 

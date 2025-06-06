@@ -5,7 +5,15 @@ import javafx.scene.control.Dialog;
 import javafx.scene.web.HTMLEditor;
 import lee.journalj.data.model.Homework;
 
+/**
+ * Класс для отображения и редактирования домашнего задания в диалоге.
+ */
 public class HomeworkEditor {
+    /**
+     * Показывает диалог редактирования домашнего задания.
+     * @param homework домашнее задание для редактирования (может быть null)
+     * @param onSave действие, выполняемое после сохранения (может быть null)
+     */
     public static void showEditDialog(Homework homework, Runnable onSave) {
         // Добавлена защита от null
         if (homework == null) {
@@ -26,7 +34,9 @@ public class HomeworkEditor {
         dialog.showAndWait().ifPresent(result -> {
             if (result != null && !result.isEmpty()) {
                 finalHomework.setContent(result); // Используем final переменную
+                if (onSave != null) {
                 onSave.run();
+                }
             }
         });
     }

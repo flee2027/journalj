@@ -1,88 +1,94 @@
 package lee.journalj.data.util;
 
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+/**
+ * Класс для управления подключениями к базе данных.
+ */
 public class DatabaseHandler {
-    private static DatabaseConfig config;
     private static DatabaseHandler instance;
+    private static Connection connection;
+    private static DatabaseConfig config;
 
-    static {
-        try {
-            Class.forName("org.sqlite.JDBC");
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("SQLite driver not found", e);
+    private DatabaseHandler() {}
+
+    public static DatabaseHandler getInstance() {
+        if (instance == null) {
+            instance = new DatabaseHandler();
+        }
+        return instance;
+    }
+
+    public static class DatabaseConfig {
+        private final DatabaseType type;
+        private final String url;
+        private final String username;
+        private final String password;
+
+        public DatabaseConfig(DatabaseType type, String url, String username, String password) {
+            this.type = type;
+            this.url = url;
+            this.username = username;
+            this.password = password;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public String getUser() {
+            return username;
+        }
+
+        public String getPassword() {
+            return password;
         }
     }
-    public DatabaseHandler(DatabaseConfig config) {
-        this.config = config;
+
+    public enum DatabaseType {
+        SQLITE,
+        MYSQL,
+        POSTGRESQL
     }
 
-    public static void init(DatabaseConfig config) {
+    public static void init(DatabaseConfig config) throws SQLException {
         DatabaseHandler.config = config;
-        registerDriver();
+        connection = createConnection();
     }
 
-    private static void registerDriver() {
-        try {
-            switch (config.getType()) {
-                case SQLITE -> Class.forName("org.sqlite.JDBC");
-                case POSTGRESQL -> Class.forName("org.postgresql.Driver");
-                default -> throw new IllegalArgumentException("Unsupported DB type");
-            }
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException("Driver not found", e);
+    public Connection getConnection() throws SQLException {
+        if (connection == null || connection.isClosed()) {
+            connection = createConnection();
         }
-    }
-
-    public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(
-                config.getUrl(),
-                config.getUser(),
-                config.getPassword()
-        );
+        return connection;
     }
 
     public DatabaseConfig getConfig() {
         return config;
     }
-    public static void close(Connection connection) {
-        if (connection != null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                throw new RuntimeException("Failed to close connection", e);
-            }
+
+    private static Connection createConnection() throws SQLException {
+        if (config == null) {
+            throw new SQLException("Database configuration is not initialized");
+        }
+
+        switch (config.type) {
+            case SQLITE:
+                return DriverManager.getConnection(config.url);
+            case MYSQL:
+            case POSTGRESQL:
+                return DriverManager.getConnection(config.url, config.username, config.password);
+            default:
+                throw new SQLException("Unsupported database type: " + config.type);
         }
     }
-    public static DatabaseHandler getInstance() {
-        if (instance == null) {
-            throw new IllegalStateException("DatabaseHandler не инициализирован");
+
+    public static void closeConnection() throws SQLException {
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
         }
-        return instance;
-    }
-
-    public enum DatabaseType { SQLITE, POSTGRESQL }
-
-    public static class DatabaseConfig {
-        private final DatabaseType type;
-        private final String url;
-        private final String user;
-        private final String password;
-
-        public DatabaseConfig(DatabaseType type, String url, String user, String password) {
-            this.type = type;
-            this.url = url;
-            this.user = user;
-            this.password = password;
-        }
-
-        // Геттеры
-        public DatabaseType getType() { return type; }
-        public String getUrl() { return url; }
-        public String getUser() { return user; }
-        public String getPassword() { return password; }
     }
 }
+

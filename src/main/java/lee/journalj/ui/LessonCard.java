@@ -1,72 +1,56 @@
 package lee.journalj.ui;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.web.WebView;
-import lee.journalj.data.model.Homework;
+import javafx.scene.text.Text;
 import lee.journalj.data.model.Lesson;
-import lee.journalj.ui.HomeworkEditor;
+import lee.journalj.service.ScheduleService;
 
-import java.time.format.DateTimeFormatter;
+public class LessonCard extends VBox {
+    public LessonCard(Lesson lesson, ScheduleService scheduleService, ScheduleTab scheduleTab) {
+        this.scheduleTab = scheduleTab;
+        setSpacing(5);
+        getStyleClass().add("lesson-card");
 
-public class LessonCard {
-    private final VBox card;
-
-    public LessonCard(Lesson lesson) {
-        Label subjectLabel = new Label("Предмет: " + lesson.getSubject());
-        Label timeLabel = new Label(
-                lesson.getStartTime().format(DateTimeFormatter.ofPattern("HH:mm"))
-                        + " – " +
-                        lesson.getEndTime().format(DateTimeFormatter.ofPattern("HH:mm"))
-        );
-        Label classroomLabel = new Label("Аудитория: " + lesson.getClassroom());
-
-        WebView homeworkPreview = new WebView();
+        Text subjectText = new Text("📚 " + lesson.getSubject());
+        Button editButton = new Button("Редактировать");
         
-        // Исправление 1: Улучшена проверка null для избежания NullPointerException
-        if (lesson.getHomeworkId() != 0 && lesson.getHomework() != null) {
-            Homework homework = lesson.getHomework();
-            if (homework != null && homework.getContent() != null && !homework.getContent().isEmpty()) {
-                homeworkPreview.getEngine().loadContent(homework.getContent());
-            } else {
-                homeworkPreview.getEngine().loadContent("<p>Нет содержимого домашнего задания</p>");
-            }
-        } else {
-            homeworkPreview.getEngine().loadContent("<p>Нет домашнего задания</p>");
-        }
+        editButton.setOnAction(e -> showEditDialog(lesson, scheduleService));
 
-        Button editHomeworkBtn = new Button("Редактировать домашнее задание");
-        editHomeworkBtn.setOnAction(e -> {
-            Homework homework = lesson.getHomework();
-            if (homework == null) {
-                homework = new Homework(); // Создаем новое домашнее задание, если его нет
-                lesson.setHomework(homework);
-            }
-            Homework finalHomework = homework;
-            HomeworkEditor.showEditDialog(homework, () -> {
-                String content = finalHomework.getContent();
-                if (content != null && !content.isEmpty()) {
-                    homeworkPreview.getEngine().loadContent(content);
-                } else {
-                    homeworkPreview.getEngine().loadContent("<p>Нет обновленного содержимого</p>");
-                }
-            });
-        });
-
-        card = new VBox(
-                new HBox(subjectLabel),
-                new HBox(timeLabel),
-                new HBox(classroomLabel),
-                homeworkPreview,
-                editHomeworkBtn
-        );
-        card.setSpacing(5);
-        card.setStyle("-fx-border-color: #ccc; -fx-padding: 10px;");
+        VBox contentBox = new VBox(5);
+        contentBox.getChildren().addAll(subjectText, editButton);
+        
+        getChildren().add(contentBox);
     }
 
-    public VBox getView() {
-        return card;
+    private final ScheduleTab scheduleTab;
+
+    private void showEditDialog(Lesson lesson, ScheduleService scheduleService) {
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Редактировать урок");
+        dialog.setHeaderText("Измените данные урока");
+
+        TextField subjectField = new TextField(lesson.getSubject());
+
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.addRow(0, new Label("Предмет:"), subjectField);
+
+        dialog.getDialogPane().setContent(grid);
+
+        dialog.setResultConverter(buttonType -> {
+                    if (buttonType == ButtonType.OK) {
+                        lesson.setSubject(subjectField.getText());
+                        scheduleService.updateLesson(lesson); // 仅传递 lesson 对象
+                    }
+                    return null;
+                });
+
+        dialog.showAndWait();
     }
 }
