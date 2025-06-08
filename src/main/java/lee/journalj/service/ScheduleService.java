@@ -2,8 +2,8 @@ package lee.journalj.service;
 
 import lee.journalj.data.model.Homework;
 import lee.journalj.data.model.Lesson;
-import lee.journalj.data.repository.HomeworkRepository;
-import lee.journalj.data.repository.LessonRepository;
+import lee.journalj.data.repository.implementation.HomeworkRepositoryImplementation;
+import lee.journalj.data.repository.implementation.LessonRepositoryImplementation;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.logging.Level;
@@ -18,11 +18,11 @@ import java.util.function.Consumer;
  */
 public class ScheduleService {
     private static final Logger logger = Logger.getLogger(ScheduleService.class.getName());
-    private final LessonRepository lessonRepo;
-    private final HomeworkRepository homeworkRepo;
+    private final LessonRepositoryImplementation lessonRepo;
+    private final HomeworkRepositoryImplementation homeworkRepo;
     private final Set<Consumer<List<String>>> subjectChangeListeners;
 
-    public ScheduleService(LessonRepository lessonRepo, HomeworkRepository homeworkRepo) {
+    public ScheduleService(LessonRepositoryImplementation lessonRepo, HomeworkRepositoryImplementation homeworkRepo) {
         if (lessonRepo == null || homeworkRepo == null) {
             throw new IllegalArgumentException("Repositories cannot be null");
         }

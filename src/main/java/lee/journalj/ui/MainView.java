@@ -84,7 +84,7 @@ public class MainView {
 
         switch (tabName) {
             case TAB_SCHEDULE:
-                content.getChildren().add(new ScheduleTab().getContent());
+                content.getChildren().add(new ScheduleTab(scheduleService, homeworkService).getContent());
                 break;
             case TAB_GRADES:
                 content.getChildren().add(new GradesTab(gradeService, studentService, scheduleService).getContent());
