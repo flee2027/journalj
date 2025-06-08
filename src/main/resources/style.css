@@ -1,0 +1,113 @@
+/* Глобальные стили для JournalJ */
+
+.root {
+    -fx-font-family: 'Segoe UI', 'Arial', sans-serif;
+    -fx-background-color: #f7f9fb;
+}
+
+.tab-pane {
+    -fx-background-color: #f7f9fb;
+}
+
+.tab {
+    -fx-background-insets: 0 0 0 0;
+    -fx-padding: 8 20 8 20;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.tab:selected {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #1976d2;
+    -fx-border-color: #1976d2 #1976d2 transparent #1976d2;
+    -fx-border-width: 2 2 0 2;
+}
+
+.button {
+    -fx-background-color: #1976d2;
+    -fx-text-fill: white;
+    -fx-background-radius: 6;
+    -fx-font-size: 14px;
+    -fx-padding: 6 18 6 18;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, #1976d2, 2, 0.2, 0, 1);
+    -fx-border-width: 0;
+    -fx-border-radius: 6;
+    -fx-transition: background-color 0.2s;
+}
+.button:hover {
+    -fx-background-color: #1565c0;
+}
+
+.label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #222;
+}
+
+.text-field, .text-area, .choice-box, .date-picker {
+    -fx-background-color: #fff;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 6 10 6 10;
+    -fx-font-size: 14px;
+}
+
+.table-view {
+    -fx-background-color: #fff;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-table-cell-border-color: #e0e0e0;
+    -fx-padding: 8;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #e3f2fd;
+}
+
+.card {
+    -fx-background-color: #fff;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 16;
+    -fx-effect: dropshadow(gaussian, #e3e3e3, 4, 0.1, 0, 2);
+    -fx-spacing: 8;
+}
+
+.split-pane {
+    -fx-background-color: #f7f9fb;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.dialog-pane {
+    -fx-background-color: #fff;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+.alert {
+    -fx-background-color: #fff;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+}
+
+/* Дополнительные стили для заголовков */
+.heading {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1976d2;
+    -fx-padding: 0 0 10 0;
+}
+
+.subheading {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #555;
+    -fx-padding: 0 0 6 0;
+} 
