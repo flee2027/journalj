@@ -3,6 +3,7 @@ package lee.journalj;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import lee.journalj.data.repository.implementation.*;
+import lee.journalj.data.util.FlywayInitializer;
 import lee.journalj.service.*;
 import lee.journalj.ui.MainView;
 import lee.journalj.data.util.DatabaseHandler;
@@ -55,15 +56,8 @@ public class Main extends Application {
             );
             DatabaseHandler.init(config);
 
-            // Initialize Flyway for database migrations
-            DatabaseHandler dbHandler = DatabaseHandler.getInstance();
-            FluentConfiguration flywayConfig = Flyway.configure()
-                .dataSource(dbHandler.getConnection().getMetaData().getURL(), "", "")
-                .locations("filesystem:src/main/resources/db/migration")
-                .baselineOnMigrate(true)
-                .validateOnMigrate(true);
-            Flyway flyway = flywayConfig.load();
-            flyway.migrate();
+            FlywayInitializer.migrate();
+
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Failed to initialize database", e);
             throw e;
@@ -92,6 +86,20 @@ public class Main extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args);
+        try {
+            launch(args);
+        } catch (Throwable e) {
+            System.err.println("Произошла критическая ошибка:");
+            e.printStackTrace();
+
+            System.out.println("\nНажмите Enter, чтобы выйти...");
+            try {
+                new java.io.BufferedReader(new java.io.InputStreamReader(System.in)).readLine();
+            } catch (Exception ex) {
+                // Игнорируем
+            }
+
+            System.exit(1);
+        }
     }
 }
